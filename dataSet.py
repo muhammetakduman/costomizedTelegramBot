@@ -183,7 +183,7 @@ def main():
                 price = s.get("signal_price", "Bilinmiyor")
 
                 message = (
-                    f"{color_emoji} <b>Yeni Sinyal!</b>\n"
+                    f"{color_emoji} <b>Yeni Sinyal!</b>{color_emoji}\n"
                     f"Market: {market}\n"
                     f"Temel Coin: {base_coin} (Sıra: {rank})\n"
                     f"Yön: {side}\n"
