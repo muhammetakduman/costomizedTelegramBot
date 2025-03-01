@@ -75,12 +75,19 @@ def login_and_get_session():
     else:
         print("Giriş başarısız:", response.text)
         return None
+# refresh the session
+def refresh_session():
+    print("Oturum süresi doldu , tekrar giriş yapılıyor...")
+    return login_and_get_session()
 
 
 #  signals response
 
 def get_signals_api(session):
     resp = session.get(SIGNALS_URL)
+    if resp.status_code == 401:
+        print("Yetkilendirme hatası (401), oturum yenileniyor...")
+        return None
     if resp.status_code == 200:
         try:
             data = resp.json()
@@ -127,11 +134,21 @@ def main():
     session = login_and_get_session()
     if not session:
         return
+    
+    start_message = "🚀🔥 **Özelleştirilmiş Bot Devrede!** 🔥🚀\n⚡ Hızlı & Güvenilir Sinyal Takibi Başladı!"
+    send_telegram_message(start_message)
 
     seen_signals = set()
 
     while True:
         signals = get_signals_api(session)
+        if signals is None:
+            session = refresh_session()
+            if not session:
+                print("Yeniden giriş başarısız, çıkılıyor")
+                break
+            continue
+
         print(f"Sinyaller alındı: {len(signals)} adet.")
 
         if not signals:
@@ -152,9 +169,9 @@ def main():
 
                 rank = TOP_100_DICT[base_coin]
                 if rank <= 20:
-                    color_emoji = "🔴"  
+                    color_emoji = "🔴🔴🔴🔴🔴"  
                 elif rank <= 50:
-                    color_emoji = "🟠" 
+                    color_emoji = "🟠🟠🟠" 
                 elif rank <= 100:
                     color_emoji = "🟡"  
                 else:
